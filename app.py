@@ -85,7 +85,7 @@ elif menu == "Monthly Summary":
     year = st.selectbox("Select Year", [2025, 2026, 2027])
 
     grocery_categories = [
-        "Sellers",
+        "Sellers Bro",
         "HEB",
         "SAMS",
         "Walmart",
@@ -192,3 +192,4 @@ elif menu == "Delete Income":
             income = income.drop(index_to_delete).reset_index(drop=True)
             income.to_csv("income.csv", index=False)
             st.success("Income record deleted successfully!")
+
