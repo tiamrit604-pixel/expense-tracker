@@ -78,8 +78,11 @@ elif menu == "Add Income":
 # --------------------
 # Monthly Summary
 # --------------------
+# --------------------
+# Monthly Summary
+# --------------------
 elif menu == "Monthly Summary":
-    st.header("Monthly Summary")
+    st.header("📊 Monthly Summary")
 
     month = st.selectbox("Select Month", range(1, 13))
     year = st.selectbox("Select Year", [2025, 2026, 2027])
@@ -102,16 +105,25 @@ elif menu == "Monthly Summary":
 
         total_expense = monthly_expenses["Amount"].sum()
 
+        # Grocery total
         grocery_expenses = monthly_expenses[
             monthly_expenses["Category"].isin(grocery_categories)
         ]
-
         grocery_total = grocery_expenses["Amount"].sum()
+
+        # Category-wise totals
+        category_totals = (
+            monthly_expenses
+            .groupby("Category")["Amount"]
+            .sum()
+            .reset_index()
+        )
 
     else:
         total_expense = 0
         grocery_total = 0
         monthly_expenses = pd.DataFrame()
+        category_totals = pd.DataFrame()
 
     if not income.empty:
         income["Date"] = pd.to_datetime(income["Date"])
@@ -127,15 +139,29 @@ elif menu == "Monthly Summary":
 
     net_savings = total_income - total_expense
 
-    st.subheader("Results")
+    # --------------------
+    # Summary Cards
+    # --------------------
+    st.subheader("💡 Summary")
     st.write(f"💵 **Total Income:** ${total_income:.2f}")
     st.write(f"💸 **Total Expenses:** ${total_expense:.2f}")
     st.write(f"🛒 **Groceries Total:** ${grocery_total:.2f}")
     st.write(f"💰 **Net Savings:** ${net_savings:.2f}")
 
+    # --------------------
+    # Category-wise totals
+    # --------------------
+    if not category_totals.empty:
+        st.subheader("📦 Category-wise Expense Total")
+        st.dataframe(category_totals)
+
+    # --------------------
+    # Detailed expenses
+    # --------------------
     if not monthly_expenses.empty:
-        st.subheader("Expense Breakdown")
+        st.subheader("🧾 Detailed Expenses")
         st.dataframe(monthly_expenses)
+
 
 
 # --------------------yy
@@ -192,4 +218,5 @@ elif menu == "Delete Income":
             income = income.drop(index_to_delete).reset_index(drop=True)
             income.to_csv("income.csv", index=False)
             st.success("Income record deleted successfully!")
+
 
