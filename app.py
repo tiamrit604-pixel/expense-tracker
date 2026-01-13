@@ -1,3 +1,26 @@
+# --------------------
+# Simple Password Protection
+# --------------------
+PASSWORD = "126604"   # change this later
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔐 Login Required")
+    password_input = st.text_input("Enter Password", type="password")
+
+    if st.button("Login"):
+        if password_input == PASSWORD:
+            st.session_state.authenticated = True
+            st.success("Login successful!")
+            st.rerun()
+        else:
+            st.error("Wrong password")
+
+    st.stop()
+import matplotlib.pyplot as plt
+
 import streamlit as st
 import pandas as pd
 from datetime import date
@@ -220,3 +243,42 @@ elif menu == "Delete Income":
             st.success("Income record deleted successfully!")
 
 
+# --------------------
+# Pie Chart: Groceries vs Others
+# --------------------
+if total_expense > 0:
+    others_total = total_expense - grocery_total
+
+    fig, ax = plt.subplots()
+    ax.pie(
+        [grocery_total, others_total],
+        labels=["Groceries", "Other Expenses"],
+        autopct="%1.1f%%",
+        startangle=90
+    )
+    ax.set_title("Groceries vs Other Expenses")
+
+    st.subheader("🥧 Expense Distribution")
+    st.pyplot(fig)
+
+# --------------------
+# Expense Trend Line (Daily)
+# --------------------
+if not monthly_expenses.empty:
+    daily_trend = (
+        monthly_expenses
+        .groupby("Date")["Amount"]
+        .sum()
+        .reset_index()
+        .sort_values("Date")
+    )
+
+    fig2, ax2 = plt.subplots()
+    ax2.plot(daily_trend["Date"], daily_trend["Amount"], marker="o")
+    ax2.set_title("📈 Daily Expense Trend")
+    ax2.set_xlabel("Date")
+    ax2.set_ylabel("Amount Spent")
+    ax2.grid(True)
+
+    st.subheader("📅 Spending Trend")
+    st.pyplot(fig2)
